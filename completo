@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Pasajero {
+    char nombre[50];
+    int documento;
+    int destino;
+    struct Pasajero* next;
+} Pasajero;
+
+void registrarPasajero(Pasajero** head, char nombre[], int documento, int destino) {
+    Pasajero* nuevoPasajero = (Pasajero*) malloc(sizeof(Pasajero));
+    strcpy(nuevoPasajero->nombre, nombre);
+    nuevoPasajero->documento = documento;
+    nuevoPasajero->destino = destino;
+    nuevoPasajero->next = *head;
+    *head = nuevoPasajero;
+}
+
+void mostrarPasajeros(Pasajero* head) {
+    Pasajero* current = head;
+    while (current != NULL) {
+        printf("Nombre: %s, Documento: %d, Destino: %d\n", current->nombre, current->documento, current->destino);
+        current = current->next;
+    }
+}
+
+void ordenarPasajeros(Pasajero** head) {
+    int swapped;
+    Pasajero* current;
+    Pasajero* next;
+    do {
+        swapped = 0;
+        current = *head;
+        while (current->next != NULL) {
+            next = current->next;
+            if (current->destino > next->destino) {
+                Pasajero* temp = current->next;
+                current->next = temp->next;
+                temp->next = current;
+                if (current == *head) {
+                    *head = temp;
+                }
+                swapped = 1;
+            } else if (current->destino == next->destino && current->documento > next->documento){
+                Pasajero* temp = current->next;
+                current->next = temp->next;
+                temp->next = current;
+                if (current == *head) {
+                    *head = temp;
+                }
+                swapped = 1;
+            }
+            current = next;
+        }
+    } while (swapped);
+}
+
+int main() {
+    Pasajero* head = NULL;
+    int opcion;
+    char nombre[50];
+    int documento;
+    int destino;
+
+    do {
+        printf("1. Registrar pasajero\n");
+        printf("2. Mostrar pasajeros\n");
+        printf("3. Ordenar pasajeros\n");
+        printf("4. Salir\n");
+        scanf("%d", &opcion);
+
+        switch (opcion) {
+            case 1:
+                printf("Ingrese nombre: ");
+                scanf("%s", nombre);
+                printf("Ingrese número de documento: ");
+                scanf("%d", &documento);
+                printf("Ingrese destino (1, 2 o 3): ");
+                scanf("%d", &destino);
+                registrarPasajero(&head, nombre, documento, destino);
+                printf("Pasajero registrado con éxito.\n");
+                break;
+            case 2:
+                mostrarPasajeros(head);
+                break;
+            case 3:
+                ordenarPasajeros(&head);
+                mostrarPasajeros(head);
+                break;
+            case 4:
+                printf("Saliendo...\n");
+                break;
+            default:
+                printf("Opción inválida.\n");
+        }
+    } while (opcion != 4);
+
+    return 0;
+}
